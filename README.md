@@ -10,17 +10,31 @@ Este projeto automatiza a criação de uma newsletter semanal sobre Inteligênci
 ## Resultado Final
 ![Newsletter gerada e enviada por email](assets/email.png)
 
+### Estrutura do Relatório (Output)
+
+O relatório semanal é gerado dinamicamente e estruturado em cinco seções estratégicas, unindo automação de dados e curadoria analítica:
+
+- Editorial: Uma introdução contextualizada sobre o panorama da IA na última semana, redigida com tom profissional e técnico.
+
+- Distribuição por Categoria: Visualização quantitativa das notícias processadas (IA Generativa, Negócios, Ferramentas), utilizando Node.js para garantir a precisão dos dados.
+
+- Deep Dives por Categoria: Seleção de notícias relevantes acompanhadas de uma Análise de Impacto e links diretos para as fontes originais.
+
+- Radar de Tendências: Identificação de padrões emergentes no mercado, explicando por que a comunidade da Inteli Academy deve acompanhar esses movimentos.
+
+- Insight Empreendedor: Sugestão de oportunidade de negócio ou projeto voltada especificamente para o mercado brasileiro e para o perfil de inovação da instituição.
+
 ## Tecnologias e Ferramentas
 
-    n8n: Orquestração de fluxos e integração de serviços.
+- n8n: Orquestração de fluxos e integração de serviços.
 
-    Groq (Llama 3.3 70b & 3.1 8b): Modelos de linguagem de alta velocidade para classificação e redação.
+- Groq (Llama 3.3 70b & 3.1 8b): Modelos de linguagem de alta velocidade para classificação e redação.
 
-    Google Gemini (2.5 Flash-Lite): Camada de resiliência e fallback para garantir a continuidade do serviço.
+- Google Gemini (2.5 Flash-Lite): Camada de resiliência e fallback para garantir a continuidade do serviço.
 
-    JavaScript (Node.js): Processamento e normalização de dados brutos das LLMs.
+- JavaScript (Node.js): Processamento e normalização de dados brutos das LLMs.
 
-    Gmail API: Canal de entrega final da newsletter.
+- Gmail API: Canal de entrega final da newsletter.
 
 ## Diferenciais Técnicos e Arquitetura
 
@@ -38,7 +52,7 @@ Utilizei um nó de código JavaScript para tratar as saídas das IAs, aplicando 
 
 ## Como Utilizar
 
-Importe o arquivo PS-Inteli-Academy.json no seu n8n.
+Importe o arquivo newsletter-ia.json no seu n8n.
 
 Configure as credenciais para:
 
