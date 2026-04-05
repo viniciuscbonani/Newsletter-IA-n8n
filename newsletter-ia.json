@@ -1,0 +1,714 @@
+{
+  "name": "PS-Inteli-Academy",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        80
+      ],
+      "id": "92b42fab-ecf7-4b44-9c54-3919b0f726c4",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -176,
+        256
+      ],
+      "id": "7a69c21b-250b-4a72-ab2a-9aa9060db192",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "8db9f19f-fe42-47e6-a38e-cb29648d0a64",
+      "name": "RSS Read - TechCrunch"
+    },
+    {
+      "parameters": {
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        160
+      ],
+      "id": "33759a8a-3abf-42b4-b0fb-f20879d1ba43",
+      "name": "RSS Read - VentureBeat"
+    },
+    {
+      "parameters": {
+        "url": "https://www.technologyreview.com/feed/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        320
+      ],
+      "id": "08766ad6-54ab-4837-9833-25b22116f03a",
+      "name": "RSS Read - MIT Technology Review"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        736,
+        144
+      ],
+      "id": "57559a0b-0663-424e-89e3-8bbbf6c29d81",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "07f65ebf-aa73-43b8-b963-031181345be8",
+      "name": "Limit 1"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        416,
+        160
+      ],
+      "id": "8c658f63-8620-482a-a65a-cac621b5efe2",
+      "name": "Limit 2"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        416,
+        320
+      ],
+      "id": "60e8f93f-5dcf-4a59-a6b6-5409b0a3e21d",
+      "name": "Limit 3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analise esta notícia:\nTítulo: {{ $json.title }}\nResumo: {{ $json.contentSnippet }}\n\nResponda estritamente no formato: STATUS|CATEGORIA\nSTATUS: 'RELEVANTE' ou 'IRRELEVANTE'\nCATEGORIA: Escolha uma entre [IA Generativa, Ética, Negócios, Ferramentas]\n\nSUA RESPOSTA DEVE CONTER APENAS O FORMATO STATUS|CATEGORIA. É PROIBIDO ESCREVER QUALQUER OUTRA PALAVRA, EXPLICAÇÃO OU RESUMO.",
+        "needsFallback": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        960,
+        624
+      ],
+      "id": "e350efda-db96-413f-b30a-fe1f9e435602",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "model": "llama-3.1-8b-instant",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        928,
+        912
+      ],
+      "id": "6092e4b7-ab34-47bf-93cb-c931116c9206",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "uUnEfaKCavrSOymA",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6ff72b50-9302-4475-bdad-43e3451fecbc",
+              "name": "status",
+              "value": "={{ $json.output.split('|')[0].split('\\n').pop().trim() }}",
+              "type": "string"
+            },
+            {
+              "id": "beed8f4f-33e9-477a-aae0-bfd2fe53cf5c",
+              "name": "categoria",
+              "value": "={{ $json.output.split('|')[1] || 'Geral' }}",
+              "type": "string"
+            },
+            {
+              "id": "3c9de4b6-28dd-4c33-a14a-9d648fb9d7cf",
+              "name": "title",
+              "value": "={{ $('Loop Over Items').item.json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "a3af9f89-dd26-4c61-bb4e-1d2653d0881d",
+              "name": "link",
+              "value": "={{ $('Loop Over Items').item.json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "7e928133-502a-4716-a898-b38771e2a22b",
+              "name": "contentSnippet",
+              "value": "={{ $('Loop Over Items').item.json.contentSnippet }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1232,
+        624
+      ],
+      "id": "faab7888-8aaa-4d73-a44d-2b57fec80bee",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        944,
+        160
+      ],
+      "id": "c2abb61e-b2e7-46ff-a9b7-a53b3cd54673",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3cdefdb3-6f1f-4fb8-a0ee-e6ba473acc5c",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "RELEVANTE",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        1376,
+        624
+      ],
+      "id": "af8bcc24-83e7-4082-a2cd-0f27c8fd70c3",
+      "name": "Filter",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1536,
+        624
+      ],
+      "id": "be3687dc-64b8-4d32-9b51-69d8d801bfc2",
+      "name": "Wait",
+      "webhookId": "6af591d8-affe-4498-b4bc-8c390a142eab"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "title"
+            },
+            {
+              "fieldToAggregate": "link"
+            },
+            {
+              "fieldToAggregate": "contentSnippet"
+            },
+            {
+              "fieldToAggregate": "categoria"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        144
+      ],
+      "id": "d808789a-c702-4fd2-839c-0199a42eb336",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Persona: Você é o Analista Técnico Chefe, especializado em curadoria de ecossistemas de Inteligência Artificial.\n\nTarefa: Com base nos dados consolidados abaixo, redija o relatório semanal 'IA Weekly Inteli'.\n\nDados de Entrada: {{ JSON.stringify($json) }}\n\nREGRA CRÍTICA: Você deve incluir TODAS as notícias presentes nos Dados de Entrada, sem exceção. É proibido omitir qualquer notícia.\n\nEstrutura do Relatório:\n\n1. Editorial\nUma introdução de 2 parágrafos sobre o clima geral da IA na última semana.\n\n2. Distribuição por Categoria\nUse os dados de categoryCount para gerar uma lista no formato:\n<h3>Distribuição por Categoria</h3>\n<ul>\n  <li><strong>Categoria X</strong>: N notícias</li>\n</ul>\n\n3. Deep Dives por Categoria\nOrganize TODAS as notícias em subseções por categoria. Para cada categoria, crie um título <h4> e liste todas as notícias daquela categoria. Para cada notícia apresente:\n- Título em <strong>\n- Análise de Impacto em <p>\n- Referência: <a href=\"LINK_EXATO_DO_CAMPO_LINK\">Acesse o artigo completo clicando aqui</a>\n\nREGRA DE OURO DOS LINKS: Use exclusivamente o valor exato do campo 'link' de cada notícia. É terminantemente proibido inventar links ou usar links genéricos.\n\n4. Radar de Tendências\nIdentifique o padrão mais forte entre todas as notícias e explique por que a comunidade deve prestar atenção agora.\n\n5. Insight Empreendedor\nSugira uma oportunidade de projeto ou startup que surge a partir dos avanços desta semana, com foco no contexto brasileiro e no perfil do Inteli.\n\nRestrições: Use apenas HTML para formatação (h3, h4, strong, a href, p, ul, li, br). Não use Markdown. Tom profissional, direto e técnico.\n\nCRÍTICO: Retorne APENAS o HTML puro, sem nenhum bloco de código, \nsem crases, sem ```html, sem nenhum wrapper. \nO primeiro caractere da sua resposta deve ser < e o último deve ser >.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        1856,
+        144
+      ],
+      "id": "80c3d715-b09a-4ac4-84c1-84d53a3b8340",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1040,
+        944
+      ],
+      "id": "5123276f-e4a1-493e-97de-3bbd95b5e506",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L3xlXmve9yj9SKJy",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "vinicius.bonani@sou.inteli.edu.br",
+        "subject": "IA Weekly Inteli",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        2224,
+        144
+      ],
+      "id": "233a9499-327a-475c-b294-ea037bbb0a8d",
+      "name": "Send a message",
+      "webhookId": "c7f73720-e34f-48f3-b00a-47e2ee4198c4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gdd6aZ6NrqyLSRDr",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const categorias = $input.first().json.categoria;\nconst counts = {};\n\nfor (const cat of categorias) {\n  // O .trim() remove espaços em branco no início e no fim da string, prevenindo erros como categorias duplicadas\n  const categoria = (cat || \"Outros\").trim();\n  counts[categoria] = (counts[categoria] || 0) + 1;\n}\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    categoryCount: counts\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        144
+      ],
+      "id": "a26a247c-b79a-43c0-aa6a-2faee71e09af",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1952,
+        320
+      ],
+      "id": "4a417ac0-e9fa-46ff-95c3-fca06aeee8d9",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "L3xlXmve9yj9SKJy",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 528,
+        "width": 912,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        576
+      ],
+      "typeVersion": 1,
+      "id": "b0f01af9-2afe-4ab5-88ea-157fedbd4c4a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 576,
+        "width": 416,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        144,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "fb592aa5-9228-4430-b4f0-60e5628b8bd8",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 368,
+        "width": 1136,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1296,
+        112
+      ],
+      "typeVersion": 1,
+      "id": "672b0b50-8e29-4201-9eb8-9461736061b6",
+      "name": "Sticky Note2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "RSS Read - TechCrunch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read - VentureBeat",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read - MIT Technology Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "RSS Read - TechCrunch",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read - VentureBeat",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "RSS Read - MIT Technology Review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read - TechCrunch": {
+      "main": [
+        [
+          {
+            "node": "Limit 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read - VentureBeat": {
+      "main": [
+        [
+          {
+            "node": "Limit 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read - MIT Technology Review": {
+      "main": [
+        [
+          {
+            "node": "Limit 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit 1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit 2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Limit 3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "63e08a0e-960c-4952-83a9-101885531134",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ee4dc52060a53056639d097f3c0d6f536d67e0a2567c0bc2d038a685f0375ef3"
+  },
+  "id": "Vz4wdVBvs3c5I4kl",
+  "tags": []
+}
