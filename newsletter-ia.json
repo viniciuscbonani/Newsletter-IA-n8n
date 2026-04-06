@@ -132,7 +132,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Analise esta notícia:\nTítulo: {{ $json.title }}\nResumo: {{ $json.contentSnippet }}\n\nResponda estritamente no formato: STATUS|CATEGORIA\nSTATUS: 'RELEVANTE' ou 'IRRELEVANTE'\nCATEGORIA: Escolha uma entre [IA Generativa, Ética, Negócios, Ferramentas]\n\nSUA RESPOSTA DEVE CONTER APENAS O FORMATO STATUS|CATEGORIA. É PROIBIDO ESCREVER QUALQUER OUTRA PALAVRA, EXPLICAÇÃO OU RESUMO.",
+        "text": "=Analise esta notícia:\nTítulo: {{ $json.title }}\nResumo: {{ $json.contentSnippet }}\n\nResponda estritamente no formato: STATUS|CATEGORIA\nSTATUS: 'RELEVANTE' ou 'IRRELEVANTE'\nCATEGORIA: Escolha uma entre [IA Generativa, Aprendizado de Máquina, \nVisão Computacional, Ética em IA, Aplicações em Saúde, Aplicações em Finanças, Aplicações em Sustentabilidade, Negócios, Ferramentas]\n\nSUA RESPOSTA DEVE CONTER APENAS O FORMATO STATUS|CATEGORIA. É PROIBIDO ESCREVER QUALQUER OUTRA PALAVRA, EXPLICAÇÃO OU RESUMO.",
         "needsFallback": true,
         "options": {}
       },
@@ -156,7 +156,7 @@
       "typeVersion": 1,
       "position": [
         928,
-        912
+        880
       ],
       "id": "6092e4b7-ab34-47bf-93cb-c931116c9206",
       "name": "Groq Chat Model",
@@ -704,7 +704,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "63e08a0e-960c-4952-83a9-101885531134",
+  "versionId": "b4ae2bec-9f0d-4cc7-8ac0-8d37fc50745e",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "ee4dc52060a53056639d097f3c0d6f536d67e0a2567c0bc2d038a685f0375ef3"
